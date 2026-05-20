@@ -268,7 +268,7 @@
 
 <!-- 1. TELA DE LOGIN -->
 <div id="screen-login" class="card"> <!-- Adicionado a classe card aqui -->
-    <h3>Passagem de Carga | Conferência v2</h3>
+    <h3>Passagem de Carga | Conferência v3</h3>
     <label>E-mail</label>
     <input type="email" id="login-user" placeholder="seu@email.com">
     
@@ -1988,18 +1988,24 @@ async function enviarOcorrenciaFluxo() {
         // =========================================================================
         // ✅ ADIÇÃO CIRÚRGICA: CAPTURA E ESTRUTURAÇÃO DOS ITENS SELECIONADOS
         // =========================================================================
+        // =========================================================================
+        // ✅ CAPTURA E ESTRUTURAÇÃO DOS ITENS SELECIONADOS
+        // =========================================================================
         const checkboxes = document.querySelectorAll('input[name="oc_itens_selecionados"]:checked');
         let itensTextoFormatado = "";
-        const listaCodigos = []; // Array crua que o backend precisa receber
+        const listaCodigos = []; 
         
         if (checkboxes.length > 0) {
-            checkboxes.forEach(cb => listaCodigos.push(cb.value));
-            // Gera um bloco claro de texto indicando quais itens têm problemas
+            checkboxes.forEach(cb => {
+                // Garante que o valor seja empurrado como string limpa
+                if(cb.value) listaCodigos.push(cb.value.toString().trim());
+            });
             itensTextoFormatado = "\n[Itens afetados: " + listaCodigos.join(", ") + "]";
         }
         
-        // Concatena a lista de itens escolhidos no final da descrição pura digitada
         const descricaoFinalComItens = descricao.trim() + itensTextoFormatado;
+        // =========================================================================
+
         // =========================================================================
 
         // ✅ TOKEN APROVADO! SE CHEGOU AQUI, O TOKEN É VÁLIDO.
