@@ -268,7 +268,7 @@
 
 <!-- 1. TELA DE LOGIN -->
 <div id="screen-login" class="card"> <!-- Adicionado a classe card aqui -->
-    <h3>Passagem de Carga | Conferência v8</h3>
+    <h3>Passagem de Carga | Conferência v9</h3>
     <label>E-mail</label>
     <input type="email" id="login-user" placeholder="seu@email.com">
     
@@ -1599,6 +1599,9 @@ async function finalizarLote() {
         // =========================================================================
         // 🚨 LOGICA CORRIGIDA: FRASE DE CONCLUÍDO INTEGRADA AO SUFIXO
         // =========================================================================
+        // =========================================================================
+        // 🚨 CORREÇÃO DEFINITIVA: INJEÇÃO COMPLETA DA STRING NA VARIÁVEL GLOBAL
+        // =========================================================================
         let historicoPrevio = "";
         if (typeof dadosCompletos !== "undefined" && dadosCompletos.length > 0) {
             const linhaRomaneio = dadosCompletos.find(r => (r.Romaneio === romaneioVal || r.id === romaneioVal));
@@ -1608,23 +1611,25 @@ async function finalizarLote() {
         }
 
         // Define a frase padrão de sucesso completa de ponta a ponta
-        const sufixoConclusao = "Volumes confirmados / CONCLUÍDO";
+        const fraseConclusaoCompleta = "Volumes confirmados / CONCLUÍDO";
         
         // Se a célula já possuir dados históricos de ocorrência, junta sem apagar o passado
         if (historicoPrevio !== "") {
             // Evita duplicar caso a frase de conclusão já conste no histórico
             if (!historicoPrevio.includes("Volumes confirmados /")) {
-                intercorrenciaFinal = historicoPrevio + " | " + sufixoConclusao;
+                intercorrenciaFinal = historicoPrevio + " | " + fraseConclusaoCompleta;
             } else {
                 intercorrenciaFinal = historicoPrevio;
             }
         } else {
-            // Se a célula estava vazia, assume a frase direta de conclusão
-            intercorrenciaFinal = sufixoConclusao;
+            // Se a célula estava vazia, assume a frase direta de conclusão completa
+            intercorrenciaFinal = fraseConclusaoCompleta;
         }
         
         pulouComentarioFinal = false; 
+        console.log("Variável global intercorrenciaFinal definida com sucesso completo:", intercorrenciaFinal);
         // =========================================================================
+
 
         // 3. Performance: Desliga Hardware (Mantido original)
         const usbField = document.getElementById("container-leitor-usb");
