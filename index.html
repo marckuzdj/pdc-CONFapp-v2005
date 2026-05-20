@@ -268,7 +268,7 @@
 
 <!-- 1. TELA DE LOGIN -->
 <div id="screen-login" class="card"> <!-- Adicionado a classe card aqui -->
-    <h3>Passagem de Carga | Conferência v3</h3>
+    <h3>Passagem de Carga | Conferência v4</h3>
     <label>E-mail</label>
     <input type="email" id="login-user" placeholder="seu@email.com">
     
@@ -1093,6 +1093,8 @@ async function atualizarDadosExtras() {
                 }
             }
             
+            // ... (Mantenha todo o seu código de sincronização de pendências, desenho da barra e travas acima) ...
+
             if (statusInfo) {
                 statusInfo.innerText = "✅ Sincronização concluída!";
                 statusInfo.style.background = "#d4edda";
@@ -1102,12 +1104,31 @@ async function atualizarDadosExtras() {
             btnIniciar.style.opacity = "1";
             btnIniciar.innerText = "Iniciar Conferência";
 
+            // =========================================================================
+            // 🚨 NOVA LOGICA: GRAVA O PROGRESSO ATUAL NA COLUNA "STATUS" DO SERVIDOR
+            // =========================================================================
+            try {
+                const elementoProgresso = document.getElementById("txt-progresso");
+                const textoProgressoAtual = elementoProgresso ? elementoProgresso.innerText.trim() : "";
+                
+                if (textoProgressoAtual !== "") {
+                    // Dispara em background para atualizar a coluna STATUS na aba ROMANEIOS
+                    const urlGravarStatus = `${urlSheets}?action=gravarStatusProgressoRomaneio&romaneio=${encodeURIComponent(selectedId)}&status_txt=${encodeURIComponent(textoProgressoAtual)}`;
+                    fetch(urlGravarStatus); 
+                    console.log("Comando enviado para atualizar coluna STATUS com:", textoProgressoAtual);
+                }
+            } catch (errStatus) {
+                console.error("Erro ao disparar atualização do status:", errStatus);
+            }
+            // =========================================================================
+
         } catch (e) {
             console.error("Erro ao sincronizar:", e);
             alert("⚠️ Erro ao sincronizar dados. Tente selecionar o romaneio novamente.");
             btnIniciar.disabled = false;
             btnIniciar.innerText = "Tentar Sincronizar";
         }
+
         
     } else {
         // Se desmarcar o romaneio (valor vazio), limpa os campos e esconde o progresso
