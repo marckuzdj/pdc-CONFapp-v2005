@@ -268,7 +268,7 @@
 
 <!-- 1. TELA DE LOGIN -->
 <div id="screen-login" class="card"> <!-- Adicionado a classe card aqui -->
-    <h3>Passagem de Carga | Conferência v7</h3>
+    <h3>Passagem de Carga | Conferência v8</h3>
     <label>E-mail</label>
     <input type="email" id="login-user" placeholder="seu@email.com">
     
@@ -1596,6 +1596,9 @@ async function finalizarLote() {
         // 🚨 LOGICA CORRIGIDA: CONCATENAÇÃO INTELIGENTE SEM SOBREPOSIÇÃO
         // =========================================================================
         // Coleta o histórico existente do cache local indexado na memória
+        // =========================================================================
+        // 🚨 LOGICA CORRIGIDA: FRASE DE CONCLUÍDO INTEGRADA AO SUFIXO
+        // =========================================================================
         let historicoPrevio = "";
         if (typeof dadosCompletos !== "undefined" && dadosCompletos.length > 0) {
             const linhaRomaneio = dadosCompletos.find(r => (r.Romaneio === romaneioVal || r.id === romaneioVal));
@@ -1604,18 +1607,19 @@ async function finalizarLote() {
             }
         }
 
-        // Garante que o texto de finalização atual não suma com as ocorrências passadas
-        const sufixoConclusao = "Volumes confirmados / ";
+        // Define a frase padrão de sucesso completa de ponta a ponta
+        const sufixoConclusao = "Volumes confirmados / CONCLUÍDO";
         
-        // Se a célula já possuir dados históricos, junta com um caractere separador " | "
+        // Se a célula já possuir dados históricos de ocorrência, junta sem apagar o passado
         if (historicoPrevio !== "") {
-            // Evita duplicar caso o prefixo já esteja no histórico por bips anteriores
-            if (!historicoPrevio.includes(sufixoConclusao)) {
+            // Evita duplicar caso a frase de conclusão já conste no histórico
+            if (!historicoPrevio.includes("Volumes confirmados /")) {
                 intercorrenciaFinal = historicoPrevio + " | " + sufixoConclusao;
             } else {
                 intercorrenciaFinal = historicoPrevio;
             }
         } else {
+            // Se a célula estava vazia, assume a frase direta de conclusão
             intercorrenciaFinal = sufixoConclusao;
         }
         
