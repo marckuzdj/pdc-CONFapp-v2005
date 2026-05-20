@@ -268,7 +268,7 @@
 
 <!-- 1. TELA DE LOGIN -->
 <div id="screen-login" class="card"> <!-- Adicionado a classe card aqui -->
-    <h3>Passagem de Carga | Conferência v5</h3>
+    <h3>Passagem de Carga | Conferência v6</h3>
     <label>E-mail</label>
     <input type="email" id="login-user" placeholder="seu@email.com">
     
@@ -1078,6 +1078,23 @@ async function atualizarDadosExtras() {
                     atualizarBarraProgresso(jaLidosNoSheets); 
                 }
 
+                // =========================================================================
+                // 🚨 ENCAIXE CORRIGIDO: ENVIO DO STATUS DENTRO DO ESCOPO DE VARIÁVEIS REAIS
+                // =========================================================================
+                try {
+                    const percentualCalculado = totalPedidos > 0 ? Math.round((jaLidosNoSheets / totalPedidos) * 100) : 0;
+                    const stringProgressoDinamic = jaLidosNoSheets + " / " + totalPedidos + " Pedidos (" + percentualCalculado + "%)";
+                    
+                    if (selectedId && stringProgressoDinamic !== "") {
+                        const urlGravarStatus = `${urlSheets}?action=gravarStatusProgressoRomaneio&romaneio=${encodeURIComponent(selectedId)}&status_txt=${encodeURIComponent(stringProgressoDinamic)}`;
+                        fetch(urlGravarStatus); 
+                        console.log("Progresso gravado na coluna STATUS com sucesso:", stringProgressoDinamic);
+                    }
+                } catch (errStatus) {
+                    console.error("Erro interno ao processar string de status:", errStatus);
+                }
+                // =========================================================================
+
                 // TRAVA: Se não houver nada pendente, bloqueia o botão de iniciar
                 if (qtdFaltantes === 0) {
                     alert("✅ A Conferência de Pedidos/Códigos de Barras está 100% CONCLUÍDA neste Romaneio! Clique em 'FINALIZAR LOTE'");
@@ -1093,10 +1110,6 @@ async function atualizarDadosExtras() {
                 }
             }
             
-            // ... (Mantenha todo o seu código de sincronização de pendências, desenho da barra e travas acima) ...
-
-            // ... (Mantenha todo o seu código de sincronização de pendências, contadores e desenho da barra acima) ...
-
             if (statusInfo) {
                 statusInfo.innerText = "✅ Sincronização concluída!";
                 statusInfo.style.background = "#d4edda";
@@ -1106,34 +1119,13 @@ async function atualizarDadosExtras() {
             btnIniciar.style.opacity = "1";
             btnIniciar.innerText = "Iniciar Conferência";
 
-            // =========================================================================
-            // 🚨 LOGICA CORRIGIDA: CÁLCULO DINÂMICO PARA EVITAR ATRASO DE RENDERIZAÇÃO
-            // =========================================================================
-            try {
-                // Calcula os valores reais direto da resposta do servidor
-                const lidosPlanilha = totalPedidos - qtdFaltantes;
-                const percentualCalculado = totalPedidos > 0 ? Math.round((lidosPlanilha / totalPedidos) * 100) : 0;
-                
-                // Monta a string de progresso idêntica à exibida no HTML da imagem
-                const stringProgressoDinamic = lidosPlanilha + " / " + totalPedidos + " Pedidos (" + percentualCalculado + "%)";
-                
-                if (selectedId && stringProgressoDinamic !== "") {
-                    // Garante o envio robusto do texto real calculado para a coluna STATUS
-                    const urlGravarStatus = `${urlSheets}?action=gravarStatusProgressoRomaneio&romaneio=${encodeURIComponent(selectedId)}&status_txt=${encodeURIComponent(stringProgressoDinamic)}`;
-                    fetch(urlGravarStatus); 
-                    console.log("Progresso calculado enviado com sucesso ao servidor:", stringProgressoDinamic);
-                }
-            } catch (errStatus) {
-                console.error("Erro ao calcular ou disparar atualização de status:", errStatus);
-            }
-            // =========================================================================
-
         } catch (e) {
             console.error("Erro ao sincronizar:", e);
             alert("⚠️ Erro ao sincronizar dados. Tente selecionar o romaneio novamente.");
             btnIniciar.disabled = false;
             btnIniciar.innerText = "Tentar Sincronizar";
         }
+
 
 
         
