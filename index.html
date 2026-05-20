@@ -268,7 +268,7 @@
 
 <!-- 1. TELA DE LOGIN -->
 <div id="screen-login" class="card"> <!-- Adicionado a classe card aqui -->
-    <h3>Passagem de Carga | Conferência v4</h3>
+    <h3>Passagem de Carga | Conferência v5</h3>
     <label>E-mail</label>
     <input type="email" id="login-user" placeholder="seu@email.com">
     
@@ -1095,6 +1095,8 @@ async function atualizarDadosExtras() {
             
             // ... (Mantenha todo o seu código de sincronização de pendências, desenho da barra e travas acima) ...
 
+            // ... (Mantenha todo o seu código de sincronização de pendências, contadores e desenho da barra acima) ...
+
             if (statusInfo) {
                 statusInfo.innerText = "✅ Sincronização concluída!";
                 statusInfo.style.background = "#d4edda";
@@ -1105,20 +1107,24 @@ async function atualizarDadosExtras() {
             btnIniciar.innerText = "Iniciar Conferência";
 
             // =========================================================================
-            // 🚨 NOVA LOGICA: GRAVA O PROGRESSO ATUAL NA COLUNA "STATUS" DO SERVIDOR
+            // 🚨 LOGICA CORRIGIDA: CÁLCULO DINÂMICO PARA EVITAR ATRASO DE RENDERIZAÇÃO
             // =========================================================================
             try {
-                const elementoProgresso = document.getElementById("txt-progresso");
-                const textoProgressoAtual = elementoProgresso ? elementoProgresso.innerText.trim() : "";
+                // Calcula os valores reais direto da resposta do servidor
+                const lidosPlanilha = totalPedidos - qtdFaltantes;
+                const percentualCalculado = totalPedidos > 0 ? Math.round((lidosPlanilha / totalPedidos) * 100) : 0;
                 
-                if (textoProgressoAtual !== "") {
-                    // Dispara em background para atualizar a coluna STATUS na aba ROMANEIOS
-                    const urlGravarStatus = `${urlSheets}?action=gravarStatusProgressoRomaneio&romaneio=${encodeURIComponent(selectedId)}&status_txt=${encodeURIComponent(textoProgressoAtual)}`;
+                // Monta a string de progresso idêntica à exibida no HTML da imagem
+                const stringProgressoDinamic = lidosPlanilha + " / " + totalPedidos + " Pedidos (" + percentualCalculado + "%)";
+                
+                if (selectedId && stringProgressoDinamic !== "") {
+                    // Garante o envio robusto do texto real calculado para a coluna STATUS
+                    const urlGravarStatus = `${urlSheets}?action=gravarStatusProgressoRomaneio&romaneio=${encodeURIComponent(selectedId)}&status_txt=${encodeURIComponent(stringProgressoDinamic)}`;
                     fetch(urlGravarStatus); 
-                    console.log("Comando enviado para atualizar coluna STATUS com:", textoProgressoAtual);
+                    console.log("Progresso calculado enviado com sucesso ao servidor:", stringProgressoDinamic);
                 }
             } catch (errStatus) {
-                console.error("Erro ao disparar atualização do status:", errStatus);
+                console.error("Erro ao calcular ou disparar atualização de status:", errStatus);
             }
             // =========================================================================
 
@@ -1128,6 +1134,7 @@ async function atualizarDadosExtras() {
             btnIniciar.disabled = false;
             btnIniciar.innerText = "Tentar Sincronizar";
         }
+
 
         
     } else {
